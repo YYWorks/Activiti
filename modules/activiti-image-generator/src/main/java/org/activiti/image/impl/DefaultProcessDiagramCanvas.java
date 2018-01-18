@@ -305,23 +305,23 @@ public class DefaultProcessDiagramCanvas {
     closed = true;
   }
 
-  public void drawNoneStartEvent(GraphicInfo graphicInfo) {
-    drawStartEvent(graphicInfo, null, 1.0);
+  public void drawNoneStartEvent(String name, GraphicInfo graphicInfo) {
+    drawStartEvent(name, graphicInfo, null, 1.0);
   }
 
-  public void drawTimerStartEvent(GraphicInfo graphicInfo, double scaleFactor) {
-    drawStartEvent(graphicInfo, TIMER_IMAGE, scaleFactor);
+  public void drawTimerStartEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+    drawStartEvent(name, graphicInfo, TIMER_IMAGE, scaleFactor);
   }
   
-  public void drawSignalStartEvent(GraphicInfo graphicInfo, double scaleFactor) {
-    drawStartEvent(graphicInfo, SIGNAL_CATCH_IMAGE, scaleFactor);
+  public void drawSignalStartEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+    drawStartEvent(name, graphicInfo, SIGNAL_CATCH_IMAGE, scaleFactor);
   }
   
-  public void drawMessageStartEvent(GraphicInfo graphicInfo, double scaleFactor) {
-    drawStartEvent(graphicInfo, MESSAGE_CATCH_IMAGE, scaleFactor);
+  public void drawMessageStartEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+    drawStartEvent(name, graphicInfo, MESSAGE_CATCH_IMAGE, scaleFactor);
   }
 
-  public void drawStartEvent(GraphicInfo graphicInfo, BufferedImage image, double scaleFactor) {
+  public void drawStartEvent(String name, GraphicInfo graphicInfo, BufferedImage image, double scaleFactor) {
     Paint originalPaint = g.getPaint();
     g.setPaint(EVENT_COLOR);
     Ellipse2D circle = new Ellipse2D.Double(graphicInfo.getX(), graphicInfo.getY(), 
@@ -337,10 +337,12 @@ public class DefaultProcessDiagramCanvas {
       g.drawImage(image, imageX, imageY,
           (int) (image.getWidth() / scaleFactor), (int) (image.getHeight() / scaleFactor), null);
     }
-
+    if (scaleFactor == 1.0 && name != null && !name.isEmpty()) {
+      g.drawString(name, (int) graphicInfo.getX() + 2, (int) (graphicInfo.getY() +  + graphicInfo.getHeight() + 15));
+    }
   }
 
-  public void drawNoneEndEvent(GraphicInfo graphicInfo, double scaleFactor) {
+  public void drawNoneEndEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
     Paint originalPaint = g.getPaint();
     Stroke originalStroke = g.getStroke();
     g.setPaint(EVENT_COLOR);
@@ -356,25 +358,28 @@ public class DefaultProcessDiagramCanvas {
     g.draw(circle);
     g.setStroke(originalStroke);
     g.setPaint(originalPaint);
-  }
-
-  public void drawErrorEndEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
-    drawErrorEndEvent(graphicInfo, scaleFactor);
-    if (scaleFactor == 1.0) {
-      drawLabel(name, graphicInfo);
+    if (scaleFactor == 1.0 && name != null && !name.isEmpty()) {
+      g.drawString(name, (int) graphicInfo.getX() + 2, (int) (graphicInfo.getY() +  + graphicInfo.getHeight() + 15));
     }
   }
+
+//  public void drawErrorEndEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+//    drawErrorEndEvent(name, graphicInfo, scaleFactor);
+//    if (scaleFactor == 1.0) {
+//      drawLabel(name, graphicInfo);
+//    }
+//  }
   
-  public void drawErrorEndEvent(GraphicInfo graphicInfo, double scaleFactor) {
-    drawNoneEndEvent(graphicInfo, scaleFactor);
+  public void drawErrorEndEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+    drawNoneEndEvent(name, graphicInfo, scaleFactor);
     g.drawImage(ERROR_THROW_IMAGE, (int) (graphicInfo.getX() + (graphicInfo.getWidth() / 4)), 
         (int) (graphicInfo.getY() + (graphicInfo.getHeight() / 4)), 
         (int) (ERROR_THROW_IMAGE.getWidth() / scaleFactor), 
         (int) (ERROR_THROW_IMAGE.getHeight() / scaleFactor), null);
   }
   
-  public void drawErrorStartEvent(GraphicInfo graphicInfo, double scaleFactor) {
-    drawNoneStartEvent(graphicInfo);
+  public void drawErrorStartEvent(String name, GraphicInfo graphicInfo, double scaleFactor) {
+    drawNoneStartEvent(name, graphicInfo);
     g.drawImage(ERROR_CATCH_IMAGE, (int) (graphicInfo.getX() + (graphicInfo.getWidth() / 4)), 
         (int) (graphicInfo.getY() + (graphicInfo.getHeight() / 4)), 
         (int) (ERROR_CATCH_IMAGE.getWidth() / scaleFactor), 
@@ -802,6 +807,9 @@ public class DefaultProcessDiagramCanvas {
       currentY += textLayout.getDescent() + textLayout.getLeading();
     }
     
+    if (layouts.isEmpty()) {
+      g.drawString(text, x + 20, y);
+    }
   }
   
 
